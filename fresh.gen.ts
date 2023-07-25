@@ -5,28 +5,32 @@
 import * as $0 from "./routes/_404.tsx";
 import * as $1 from "./routes/_app.tsx";
 import * as $2 from "./routes/api/joke.ts";
-import * as $3 from "./routes/editorjs-demo.tsx";
-import * as $4 from "./routes/greet/[name].tsx";
-import * as $5 from "./routes/index.tsx";
-import * as $6 from "./routes/quill-demo.tsx";
+import * as $3 from "./routes/ckeditor-demo.tsx";
+import * as $4 from "./routes/editorjs-demo.tsx";
+import * as $5 from "./routes/greet/[name].tsx";
+import * as $6 from "./routes/index.tsx";
+import * as $7 from "./routes/quill-demo.tsx";
 import * as $$0 from "./islands/Counter.tsx";
-import * as $$1 from "./islands/editorjs/EditorJs.tsx";
-import * as $$2 from "./islands/quill/quill.tsx";
+import * as $$1 from "./islands/ckeditor/CkEditor.tsx";
+import * as $$2 from "./islands/editorjs/EditorJs.tsx";
+import * as $$3 from "./islands/quill/quill.tsx";
 
 const manifest = {
   routes: {
     "./routes/_404.tsx": $0,
     "./routes/_app.tsx": $1,
     "./routes/api/joke.ts": $2,
-    "./routes/editorjs-demo.tsx": $3,
-    "./routes/greet/[name].tsx": $4,
-    "./routes/index.tsx": $5,
-    "./routes/quill-demo.tsx": $6,
+    "./routes/ckeditor-demo.tsx": $3,
+    "./routes/editorjs-demo.tsx": $4,
+    "./routes/greet/[name].tsx": $5,
+    "./routes/index.tsx": $6,
+    "./routes/quill-demo.tsx": $7,
   },
   islands: {
     "./islands/Counter.tsx": $$0,
-    "./islands/editorjs/EditorJs.tsx": $$1,
-    "./islands/quill/quill.tsx": $$2,
+    "./islands/ckeditor/CkEditor.tsx": $$1,
+    "./islands/editorjs/EditorJs.tsx": $$2,
+    "./islands/quill/quill.tsx": $$3,
   },
   baseUrl: import.meta.url,
 };

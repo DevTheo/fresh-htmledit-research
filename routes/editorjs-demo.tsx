@@ -2,7 +2,7 @@ import { Head } from "$fresh/runtime.ts";
 import { useSignal } from "@preact/signals";
 import Counter from "../islands/Counter.tsx";
 import { useCallback, useState } from "preact/hooks";
-import { EditorJs } from "../islands/editorjs/editorjs.tsx";
+import { EditorJs } from "../islands/editorjs/EditorJs.tsx";
 
 export default function EditorJsDemo() {
   const count = useSignal(3);
