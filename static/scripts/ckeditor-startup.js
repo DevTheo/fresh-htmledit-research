@@ -10,12 +10,11 @@ const EditorTypes = {
 function ckeditor_init(editorName, editorStyle, saveToId, content) {
     const editorSelector = `#${editorName}`;
     const saveToEl = document.querySelector(`#${saveToId}`)
-    const wordCountConfig = {
-        onUpdate: ( stats ) => {
-            console.log("writing");
-            saveToEl.value = editor.getData();
-        }
-    };
+    const doSave = (editor) => {
+      saveToEl.value = editor.getData();
+      console.log("content save:", saveToEl.value);
+    }
+
     const config = {  
         plugins: ["Essentials", 
                   //"CKFinderUploadAdapter",
@@ -45,18 +44,7 @@ function ckeditor_init(editorName, editorStyle, saveToId, content) {
                   "TableToolbar",
                   //"TextTransformation"
         ],
-        initialData: (content || ""),
-        autosave: {
-            save: ( editor ) => {
-                console.log("writing");
-                // The saveData() function must return a promise
-                // which should be resolved when the data is successfully saved.
-                saveToEl.value = editor.getData();
-                return Promise.resolve();
-            },
-            waitingTime: 10
-        },
-        wordCount: wordCountConfig
+        initialData: (content || "")
     };
     const editorCreator = editorStyle === EditorTypes.Classic ? 
           ClassicEditor :  
@@ -84,12 +72,11 @@ function ckeditor_init(editorName, editorStyle, saveToId, content) {
 
                 toolbarContainer.appendChild( editor.ui.view.toolbar.element );
             }
-            console.log( 'Editor was initialized', editor );
-            // editor.on('change:state', (eventInfo, name, value, oldValue) => {
-            //     console.log('eventInfo:', eventInfo)
-            //     console.log('name:', name);
-            //     console.log('values:', value, oldValue);
-            // })
+            //console.log( 'Editor was initialized', editor );
+            editor.model.document.on( 'change:data', (editorName, editorStyle, saveToId, content) => {
+              //console.log("data changed", editorName, editorStyle, saveToId, content);
+              doSave(editor);
+            })
         } )
         .catch( error => {
             console.error( error );
