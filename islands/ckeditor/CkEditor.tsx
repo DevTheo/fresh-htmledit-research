@@ -1,5 +1,5 @@
 import { Signal } from "@preact/signals";
-import { useEffect, useRef } from "preact/compat";
+import { useEffect, useMemo, useRef, useState } from "preact/compat";
 import { JSX } from "preact/jsx-runtime";
 
 export enum CkEditorEditorTypes {
@@ -51,6 +51,7 @@ export function getEditorCreator(editorType: CkEditorEditorTypes) {
 export type CkEditorProps = {
     name: string;
     html: Signal<string>;
+    showSave?: boolean;
 };
 
 function getCkEditorConfig(html: Signal<string>) {
@@ -89,36 +90,54 @@ function getCkEditorConfig(html: Signal<string>) {
 
 }
 
-export function CkEditor({name, html} : CkEditorProps) {
+export function CkEditor({name, html, showSave} : CkEditorProps) {
     const editorName = `${name}-editor`;
     const editorRef = useRef(null);
+    const [isSetup, setIsSetup] = useState(false); 
     
     const doSave = (editor: any) => {
         html.value = editor.getData();
         console.log("saved", html.value)
     }
+
     useEffect(() => {
         setTimeout(() => {
-            
-            const editorCreator = getEditorCreator(selectedEditorType);
-            
-            console.log(editorCreator);
+            console.log("is setup?");
+            if (!isSetup) {       
+                const editorCreator = getEditorCreator(selectedEditorType);
+                
+                console.log(editorCreator);
 
-            editorCreator.create( editorRef.current, getCkEditorConfig(html)).then( (editor: any) => {
-                editor.model.document.on( 'change:data', (editorName: string, editorStyle: any, saveToId: any, content: any) => {
-                    console.log("data changed", editorName, editorStyle, saveToId, content);
-                    doSave(editor);
-                })
-            }).catch( (error: any) => { 
-                console.error( error );
-            });
+                editorCreator.create( editorRef.current, getCkEditorConfig(html)).then( (editor: any) => {
+                    editor.model.document.on( 'change:data', (editorName: string, editorStyle: any, saveToId: any, content: any) => {
+                        console.log("data changed", editorName, editorStyle, saveToId, content);
+                        doSave(editor);
+                    })
+                }).catch( (error: any) => { 
+                    console.error( error );
+                });
+                setIsSetup(true);
+            }
         }, 100);
-    });
+    }, [isSetup]);
+
+    const doSubmit = async () => {
+        const formData = new FormData();
+        formData.append(name, html.value);
+        const result = await fetch(window.location.href, {
+            body: formData,
+            method: "post"
+        });
+        if(result.status === 200) {
+            alert("Saved");
+        } else {
+            console.error(result);
+            alert("Failed to save");
+        }
+    }
     
     return (<>
-        <script src='/scripts/ckeditor-startup.js'></script>
-        <div id="toolbar-container">            
-        </div>
+        {showSave && <button type="button" onClick={() => doSubmit()}>Save</button>}
         <div id={editorName} ref={editorRef}>
         </div>
     </>)
