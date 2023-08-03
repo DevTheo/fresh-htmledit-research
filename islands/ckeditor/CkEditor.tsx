@@ -52,9 +52,10 @@ export type CkEditorProps = {
     name: string;
     html: Signal<string>;
     showSave?: boolean;
+    ckEditorConfig?: any;
 };
 
-function getCkEditorConfig(html: Signal<string>) {
+function getDefaultCkEditorConfig(html: Signal<string>) {
 
     return {  
         plugins: ["Essentials", 
@@ -90,7 +91,7 @@ function getCkEditorConfig(html: Signal<string>) {
 
 }
 
-export function CkEditor({name, html, showSave} : CkEditorProps) {
+export function CkEditor({name, html, showSave, ckEditorConfig} : CkEditorProps) {
     const editorName = `${name}-editor`;
     const editorRef = useRef(null);
     const [isSetup, setIsSetup] = useState(false); 
@@ -100,6 +101,8 @@ export function CkEditor({name, html, showSave} : CkEditorProps) {
         console.log("saved", html.value)
     }
 
+    const config = useMemo(() => ckEditorConfig || getDefaultCkEditorConfig(html), [html, ckEditorConfig]);
+
     useEffect(() => {
         setTimeout(() => {
             console.log("is setup?");
@@ -108,7 +111,7 @@ export function CkEditor({name, html, showSave} : CkEditorProps) {
                 
                 console.log(editorCreator);
 
-                editorCreator.create( editorRef.current, getCkEditorConfig(html)).then( (editor: any) => {
+                editorCreator.create( editorRef.current, config).then( (editor: any) => {
                     editor.model.document.on( 'change:data', (editorName: string, editorStyle: any, saveToId: any, content: any) => {
                         console.log("data changed", editorName, editorStyle, saveToId, content);
                         doSave(editor);
@@ -119,7 +122,7 @@ export function CkEditor({name, html, showSave} : CkEditorProps) {
                 setIsSetup(true);
             }
         }, 100);
-    }, [isSetup]);
+    }, [isSetup, config]);
 
     const doSubmit = async () => {
         const formData = new FormData();

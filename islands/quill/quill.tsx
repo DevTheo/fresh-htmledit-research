@@ -1,56 +1,88 @@
-import { useState } from "https://esm.sh/v128/preact@10.15.1/hooks/src/index.js";
-//import { HTMLAttributes, useRef } from "preact/compat";
-// import * as quillmod from "https://esm.sh/quill@1.3.7"; 
-//import Quill from "https://esm.sh/quill@1.3.7"; 
+import { Signal } from "@preact/signals";
+import { useEffect, useRef, useMemo, useState } from "preact/hooks";
+import { JSX } from "preact/jsx-runtime";
 
-export type QuillEditorProps = {
-    name: string;
-    html?: string;
-    width?: string;
-    height?: string;
+const getQuillFn = () => {
+    return (window as any).Quill;
+}
+
+const defaultQuillConfig = {
+    modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline', 'strike', 'script', 'blockquote', 'align', 'direction'],
+          [{'size': [ 'small', 'medium', 'large', 'huge' ]}], //'font', 
+          ['color','background'],
+          //['list', 'indent'],
+          ['link', 'image', 'video', 'code'] //, 'code-block'
+        ]
+      }, 
+    placeholder: 'Compose an epic...',       
+    theme: 'snow' /* or 'bubble' */
 };
 
-export function QuillEditor({name, html, height, width }: QuillEditorProps) {
-    //const [editedHtml, setEditedHtml] = useState<string>("");
+export type QuillEditorProps = {
+
+    name: string;
+    html: Signal<string>;
+    width?: string;
+    height?: string;
+    showSave?: boolean;
+    quillConfig?: any;
+};
+
+export function QuillEditor({name, html, quillConfig, showSave }: QuillEditorProps) {
     
     const editorName = `${name}-editor`;
-    const toolbarName = `${name}-toolbar`;
-    html = html || "";
-    const style = {display: "block"};
-    (style as any)["height"] = height ? height : "height: 375px;";
-    if(width) {
-        (style as any)["width"] = width;
+    const editorRef = useRef<HTMLDivElement>(null);
+    const hiddenInputRef = useRef<HTMLInputElement>(null);
+    const [isSetup, setIsSetup] = useState(false); 
+
+    const doSave = async () => {
+        const formData = new FormData();
+        formData.append(name, html.value);
+        const result = await fetch(window.location.href, {
+            body: formData,
+            method: "post"
+        });
+        if(result.status === 200) {
+            alert("Saved");
+        } else {
+            console.error(result);
+            alert("Failed to save");
+        }
     }
 
-    const quillScript = `
-            const hiddenText = document.getElementById('${name}');
-            const quill = new Quill('#${editorName}', {
-                modules: {
-                    toolbar: [
-                      [{ header: [1, 2, false] }],
-                      ['bold', 'italic', 'underline'],
-                      ['image', 'code-block']
-                    ]
-                  }, 
-                placeholder: 'Compose an epic...',       
-                theme: 'snow' /* or 'bubble' */
+    const config = useMemo(() => { 
+        const result = quillConfig ?? defaultQuillConfig;
+        if (showSave) {
+            result.modules.toolbar = [ ['save'], ...result.modules.toolbar]; // = [, ...result.modules.toolbar]; 
+        }
+        return result; 
+    }, [name]);
+
+    useEffect(() => {
+        if (!isSetup && hiddenInputRef.current && editorRef.current) {
+            const quill = new (getQuillFn())(`#${editorName}`,  //editorRef, {
+                config);
+            quill.on('text-change', function(delta: any, oldDelta: any, source: any) {
+                html.value = quill.root.innerHTML;
             });
-            quill.root.style.height='375px';
-            quill.on('text-change', function(delta, oldDelta, source) {
-                hiddenText.value = quill.root.innerHTML;
-            });
-        `;    
-        //  
-        
-        //   
+            const saveButton = document.getElementsByClassName('ql-save')[0] as HTMLButtonElement;
+            if (showSave) {
+                saveButton.textContent = 'Save';
+                saveButton.addEventListener('click', function(e: any) {
+                    doSave();
+                });
+            }
+            quill.setContents(quill.clipboard.convert(html.value));
             
-        
-// {...props}
-    return (<>
-            <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-            
-            <div id={editorName}></div>
-            <input type="hidden" id={name} name={name} style={{"display": "none"}} onChange={(e) => console.log(e)} />
-            <script>{quillScript}</script>
+            setIsSetup(true);
+        }
+    }, [isSetup, config, hiddenInputRef, editorRef]);
+
+    return (<>            
+            <div id={editorName} ref={editorRef}></div>
+            <input type="hidden" id={name} name={name} ref={hiddenInputRef} style={{"display": "none"}} value={html.value || ""} />
         </>)
 }
