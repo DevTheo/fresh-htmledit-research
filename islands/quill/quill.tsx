@@ -2,6 +2,11 @@ import { Signal } from "@preact/signals";
 import { useEffect, useRef, useMemo, useState } from "preact/hooks";
 import { JSX } from "preact/jsx-runtime";
 
+export const getQuillCoreScript = () => "https://cdn.quilljs.com/1.3.6/quill.js";
+export const getQuillThemeCssLink = (themeName: string) =>
+     `https://cdn.quilljs.com/1.3.6/quill.${themeName}.css`;
+
+
 const getQuillFn = () => {
     return (window as any).Quill;
 }

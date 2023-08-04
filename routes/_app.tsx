@@ -1,16 +1,25 @@
 import { AppProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { getCkEditorBaseScript,CkEditorEditorTypes } from "../islands/ckeditor/CkEditor.tsx";
+import { getQuillCoreScript, getQuillThemeCssLink } from "../islands/quill/quill.tsx";
+import { getTrixCssLink, getTrixScript } from "../islands/TrixRtfEditor.tsx";
 
 export default function App({ Component }: AppProps) {
   return (
     <>
       <Head>
         <link rel="stylesheet" href="/styles.css" />
-        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
-        <link href="https://cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet" />
+        {/* Quill Setup */}
+        <link href={getQuillThemeCssLink("snow")} rel="stylesheet" />
+        <script src={getQuillCoreScript()}></script>
+
+        {/* CkEditor Setup */}
         <script src={`${getCkEditorBaseScript(CkEditorEditorTypes.Superbuild)}`}></script>
-        <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+        {/* Trix Setup */}
+        <link rel="stylesheet" type="text/css" href={getTrixCssLink()} />
+        <script type="text/javascript" src={getTrixScript()}></script>
+
       </Head>
       <Component />
     </>

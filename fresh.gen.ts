@@ -10,10 +10,12 @@ import * as $4 from "./routes/editorjs-demo.tsx";
 import * as $5 from "./routes/greet/[name].tsx";
 import * as $6 from "./routes/index.tsx";
 import * as $7 from "./routes/quill-demo.tsx";
+import * as $8 from "./routes/trix-demo.tsx";
 import * as $$0 from "./islands/Counter.tsx";
-import * as $$1 from "./islands/ckeditor/CkEditor.tsx";
-import * as $$2 from "./islands/editorjs/EditorJs.tsx";
-import * as $$3 from "./islands/quill/quill.tsx";
+import * as $$1 from "./islands/TrixRtfEditor.tsx";
+import * as $$2 from "./islands/ckeditor/CkEditor.tsx";
+import * as $$3 from "./islands/editorjs/EditorJs.tsx";
+import * as $$4 from "./islands/quill/quill.tsx";
 
 const manifest = {
   routes: {
@@ -25,12 +27,14 @@ const manifest = {
     "./routes/greet/[name].tsx": $5,
     "./routes/index.tsx": $6,
     "./routes/quill-demo.tsx": $7,
+    "./routes/trix-demo.tsx": $8,
   },
   islands: {
     "./islands/Counter.tsx": $$0,
-    "./islands/ckeditor/CkEditor.tsx": $$1,
-    "./islands/editorjs/EditorJs.tsx": $$2,
-    "./islands/quill/quill.tsx": $$3,
+    "./islands/TrixRtfEditor.tsx": $$1,
+    "./islands/ckeditor/CkEditor.tsx": $$2,
+    "./islands/editorjs/EditorJs.tsx": $$3,
+    "./islands/quill/quill.tsx": $$4,
   },
   baseUrl: import.meta.url,
 };
